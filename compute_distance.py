@@ -38,6 +38,9 @@ def main():
     try:
         mhc_pocket_ids = [5, 7, 59, 84, 143]
         total_affinity_score = 0
+
+        minimum_distance = float("inf")
+        minimum_pair = None
         
         print(f"\n--- {CURRENT_ALLELE} 特異的ポケットスキャン開始 ---")
         
@@ -48,6 +51,14 @@ def main():
                 pep_res_id = pep_res.id[1]
                 atom_pep = pep_res['CA']
                 distance = atom_mhc - atom_pep
+
+                if distance < minimum_distance:
+                   minimum_distance = distance
+                   minimum_pair = {
+                       "mhc_res_id": mhc_res_id,
+                       "pep_res_id": pep_res_id,
+                       "pep_res_name": pep_res.get_resname().upper(),
+                    }
                 
                 # スクリーニング（MHC–peptide原子間距離が5.0 Å以内）
                 if distance <= DISTANCE_THRESHOLD_ANGSTROM:
@@ -65,7 +76,16 @@ def main():
                     
                     total_affinity_score += score_increment
                     print(f"  検出: MHC {mhc_res_id:3d} <--> ペプチド P{pep_res_id} ({res_name}) | 距離: {distance:5.2f}Å | +{score_increment}点{bonus_text}")
-                
+
+        if minimum_pair is not None:
+           print(
+               "\n🔎 最小CA原子間距離: "
+               f"{minimum_distance:.2f} Å "
+               f"(MHC {minimum_pair['mhc_res_id']} "
+               f"<--> ペプチド P{minimum_pair['pep_res_id']} "
+               f"{minimum_pair['pep_res_name']})"
+         )
+
         print("-" * 50)
         print(f"🔥 【{CURRENT_ALLELE}】での最終予測親和性スコア: {total_affinity_score} 点")
         
