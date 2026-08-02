@@ -1,5 +1,8 @@
 import os
+
 from Bio import PDB
+
+DISTANCE_THRESHOLD_ANGSTROM = 5.0
 
 def get_biopython_structure(structure_id, pdb_path):
     parser = PDB.PDBParser(QUIET=True)
@@ -46,8 +49,8 @@ def main():
                 atom_pep = pep_res['CA']
                 distance = atom_mhc - atom_pep
                 
-                # スクリーニング（テスト判定用に35.0Å）
-                if distance <= 35.0:
+                # スクリーニング（MHC–peptide原子間距離が5.0 Å以内）
+                if distance <= DISTANCE_THRESHOLD_ANGSTROM:
                     score_increment = 1
                     bonus_text = ""
                     
