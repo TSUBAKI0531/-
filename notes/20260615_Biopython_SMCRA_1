@@ -1,0 +1,48 @@
+#from Bio.PDB import PDBList
+#pdbl = PDBList()
+#pdbl.retrieve_pdb_file('1a1m', pdir='.', file_format='pdb')
+
+import os
+from Bio import PDB
+
+# 1. ダウンロード処理
+pdbl = PDB.PDBList()
+pdbl.retrieve_pdb_file('1a1m', pdir='.', file_format='pdb')
+
+# 2. ダウンロードされた可能性のあるパスを自動探索する
+possible_paths = [
+    os.path.abspath("1a1m.pdb"),
+    os.path.abspath("1A1M.pdb"),
+    os.path.abspath(os.path.join("aa", "pdb1a1m.ent")),
+    os.path.abspath(os.path.join("aa", "pdb1A1M.ent")),
+    os.path.abspath("pdb1a1m.ent")
+]
+
+actual_pdb_path = None
+for path in possible_paths:
+    if os.path.exists(path):
+        actual_pdb_path = path
+        break
+
+# 3. ファイルの存在チェックとパース
+if actual_pdb_path is None:
+    print("❌ エラー: PDBファイルが探索ルート内に見つかりませんでした。")
+    print("現在のスクリプト実行ディレクトリ:", os.getcwd())
+    print("フォルダ内のファイル一覧:", os.listdir('.'))
+    if os.path.exists('aa'):
+        print("'aa' フォルダ内のファイル一覧:", os.listdir('aa'))
+else:
+    print(f"🔍 ファイルを発見しました: {actual_pdb_path}")
+    
+    parser = PDB.PDBParser(QUIET=True)
+    structure = parser.get_structure("MHC_I", actual_pdb_path)
+
+    print("🎉 パース成功！SMCRA構造の出力を開始します。")
+
+    # 4. Chain A（抗原提示溝）のResidueをループ処理
+    for model in structure:
+        for chain in model:
+            if chain.id == 'A':
+                # 最初の方の残基を5つ表示
+                for residue in list(chain)[:5]:
+                    print(f"Residue: {residue.get_resname()} (Position: {residue.id[1]})")

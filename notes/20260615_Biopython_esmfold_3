@@ -1,0 +1,24 @@
+import os
+from Bio import PDB
+
+# 今回パースする対象は、ESMFold（エミュレータ）が吐き出した予測PDBファイル
+target_pdb = "esmfold_predicted.pdb"
+
+if not os.path.exists(target_pdb):
+    print(f"❌ エラー: {target_pdb} が見つかりません。")
+else:
+    print(f"🔍 予測PDBファイルを発見しました: {os.path.abspath(target_pdb)}")
+    
+    # Biopythonのパーサーを起動
+    parser = PDB.PDBParser(QUIET=True)
+    structure = parser.get_structure("ESMFold_Prediction", target_pdb)
+
+    print("🎉 Biopythonによる予測構造のパースに成功しました！！！")
+    print("--- 予測されたペプチドのSMCRA階層構造（アミノ酸残基） ---")
+
+    # 構造（Structure）から潜って残基を表示
+    for model in structure:
+        for chain in model:
+            print(f"Chain ID: {chain.id}")
+            for residue in chain:
+                print(f"  Residue: {residue.get_resname()} (Position: {residue.id[1]})")

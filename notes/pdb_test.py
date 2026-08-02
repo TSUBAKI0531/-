@@ -15,10 +15,10 @@ parser = PDBParser()
 # ※コードAでダウンロードされた実際のファイル名（例: "pdb1fat.ent"）に書き換えてください
 structure = parser.get_structure("1FAT_sample", "pdb1fat.ent")
 
-# 3. Model 0 の Chain A を取得（ショートカット利用）
-chain_a = structure[0]["A"]
+# 3. Model 0 の Chain B を取得（ショートカット利用）
+chain_b = structure[0]["B"]
 
-# 4. Chain A 内の全残基をループで回し、残基名を出力
-print("--- Chain A の残基名一覧 ---")
-for residue in chain_a:
+# 4. Chain B 内の全残基をループで回し、残基名を出力
+print("--- Chain B の残基名一覧 ---")
+for residue in chain_b:
     print(residue.get_resname())
