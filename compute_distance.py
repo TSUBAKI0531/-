@@ -4,6 +4,13 @@ from Bio import PDB
 
 DISTANCE_THRESHOLD_ANGSTROM = 5.0
 
+def is_within_distance_threshold(
+    distance: float,
+    threshold: float = DISTANCE_THRESHOLD_ANGSTROM,
+) -> bool:
+    """距離が閾値以内か判定する。"""
+    return distance <= threshold
+
 def get_biopython_structure(structure_id, pdb_path):
     parser = PDB.PDBParser(QUIET=True)
     return parser.get_structure(structure_id, pdb_path)
@@ -61,7 +68,7 @@ def main():
                     }
                 
                 # スクリーニング（MHC–peptide原子間距離が5.0 Å以内）
-                if distance <= DISTANCE_THRESHOLD_ANGSTROM:
+                if is_within_distance_threshold(distance):
                     score_increment = 1
                     bonus_text = ""
                     
